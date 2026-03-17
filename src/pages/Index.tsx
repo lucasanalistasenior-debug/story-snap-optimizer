@@ -74,8 +74,8 @@ const Index = () => {
       });
       setSeoTitle(titleData.title ?? "");
 
-      // Step 2: Generate 4 images in parallel
-      const imagePromises = Array.from({ length: 4 }, (_, i) =>
+      // Step 2: Generate 6 images in parallel
+      const imagePromises = Array.from({ length: 6 }, (_, i) =>
         callEdgeFunction("generate-product-images", {
           productInfo: productInfo.trim(),
           vehicleInfo: vehicleInfo.trim(),
