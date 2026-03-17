@@ -1,1 +1,7 @@
 project_id = "zxsyqbqmoqvpcwtcpjmk"
+
+[functions.generate-seo-title]
+verify_jwt = false
+
+[functions.generate-product-images]
+verify_jwt = false
