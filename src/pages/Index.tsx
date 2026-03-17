@@ -64,7 +64,7 @@ const Index = () => {
     setIsGenerating(true);
     setHasGenerated(false);
     setSeoTitle("");
-    setGeneratedImages([null, null, null, null]);
+      setGeneratedImages([null, null, null, null, null, null]);
 
     try {
       // Step 1: Generate SEO title
