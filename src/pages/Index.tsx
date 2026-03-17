@@ -124,7 +124,7 @@ const Index = () => {
     setProductInfo("");
     setVehicleInfo("");
     setSeoTitle("");
-    setGeneratedImages([null, null, null, null]);
+    setGeneratedImages([null, null, null, null, null, null]);
     setHasGenerated(false);
     setIsGenerating(false);
   };
