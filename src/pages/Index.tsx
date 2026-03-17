@@ -41,7 +41,7 @@ const Index = () => {
 
   // Outputs
   const [seoTitle, setSeoTitle] = useState("");
-  const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null, null]);
+  const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null, null, null, null]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
 
