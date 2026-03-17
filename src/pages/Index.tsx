@@ -41,7 +41,7 @@ const Index = () => {
 
   // Outputs
   const [seoTitle, setSeoTitle] = useState("");
-  const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null, null]);
+  const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null, null, null, null]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
 
@@ -64,7 +64,7 @@ const Index = () => {
     setIsGenerating(true);
     setHasGenerated(false);
     setSeoTitle("");
-    setGeneratedImages([null, null, null, null]);
+      setGeneratedImages([null, null, null, null, null, null]);
 
     try {
       // Step 1: Generate SEO title
@@ -74,8 +74,8 @@ const Index = () => {
       });
       setSeoTitle(titleData.title ?? "");
 
-      // Step 2: Generate 4 images in parallel
-      const imagePromises = Array.from({ length: 4 }, (_, i) =>
+      // Step 2: Generate 6 images in parallel
+      const imagePromises = Array.from({ length: 6 }, (_, i) =>
         callEdgeFunction("generate-product-images", {
           productInfo: productInfo.trim(),
           vehicleInfo: vehicleInfo.trim(),
@@ -124,7 +124,7 @@ const Index = () => {
     setProductInfo("");
     setVehicleInfo("");
     setSeoTitle("");
-    setGeneratedImages([null, null, null, null]);
+    setGeneratedImages([null, null, null, null, null, null]);
     setHasGenerated(false);
     setIsGenerating(false);
   };

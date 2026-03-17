@@ -6,21 +6,29 @@ const corsHeaders = {
 };
 
 const IMAGE_PROMPTS = [
-  // Image 1: Product on white background with vehicle
+  // Image 1 (Hero): Car positioned ABOVE the product on white background
   (productInfo: string, vehicleInfo: string) =>
-    `Professional e-commerce product photography. ${productInfo}${vehicleInfo ? ` compatible with ${vehicleInfo}` : ""}. The product is displayed on a pure white background, cleanly lit with soft studio lighting. No shadows. Ultra clean, minimal, commercial product shot suitable for Amazon listing.`,
+    `Professional automotive e-commerce hero image. Dramatic composite product shot: a ${vehicleInfo || "modern car"} is prominently displayed in the upper half of the image, positioned above and slightly angled, as if floating or parked above the product. Directly below the car, centered at the bottom of the image, sits the ${productInfo} product on a pure white background. Clean white studio background throughout. The vehicle dominates the top portion, the product sits below it. Crystal clear studio lighting, no shadows, ultra-clean commercial photography suitable for Amazon.`,
 
-  // Image 2: Product in context/lifestyle
+  // Image 2: Product installed on the vehicle
   (productInfo: string, vehicleInfo: string) =>
-    `Lifestyle product photography. ${productInfo}${vehicleInfo ? ` for ${vehicleInfo}` : ""}. Product shown installed or in use in a realistic setting. Professional automotive/product photography style. Well-lit, sharp focus, high quality commercial image.`,
+    `Professional automotive product photography. The ${productInfo} shown installed and in use on a ${vehicleInfo || "modern vehicle"} in a realistic outdoor or garage setting. Show the product in its natural installed position. Well-lit, sharp focus, high quality commercial image.`,
 
-  // Image 3: Product detail/close-up with feature callouts
+  // Image 3: Product close-up detail on white background
   (productInfo: string, vehicleInfo: string) =>
-    `Close-up detail product photography showing key features of ${productInfo}. Macro photography style highlighting material quality, craftsmanship, and important specifications. Clean background with soft gradient. High-end commercial photography.`,
+    `Macro product photography. Extreme close-up of ${productInfo} highlighting material quality, finish, craftsmanship and key technical details. Clean white or very light gradient background. Show texture, connectors, labels or part numbers clearly. High-end commercial photography style.`,
 
-  // Image 4: Comparison or multi-angle shot
+  // Image 4: Product from multiple angles / packaging
   (productInfo: string, vehicleInfo: string) =>
-    `Professional product photography showing ${productInfo} from multiple angles or displayed alongside packaging. ${vehicleInfo ? `Compatible with ${vehicleInfo}.` : ""} Clean studio setup with neutral gray gradient background. Commercial e-commerce style.`,
+    `Professional product photography. ${productInfo} shown from three different angles simultaneously arranged on a clean light gray gradient background: front view, side view, and back/bottom view. ${vehicleInfo ? `Product fits ${vehicleInfo}.` : ""} Commercial e-commerce catalog style.`,
+
+  // Image 5: Infographic-style with key features highlighted
+  (productInfo: string, vehicleInfo: string) =>
+    `Clean infographic-style product image for e-commerce. ${productInfo} on a white background with subtle text callout lines pointing to 3-4 key features or specifications. Modern, minimal SaaS-style design. Icons and short labels next to each callout. Professional commercial product shot.`,
+
+  // Image 6: Lifestyle/banner — product with vehicle in scenic setting
+  (productInfo: string, vehicleInfo: string) =>
+    `Wide-format lifestyle banner photography. ${vehicleInfo || "A modern vehicle"} parked in an attractive urban or scenic outdoor environment. The ${productInfo} is visibly featured as a key component of the vehicle. Golden hour lighting, cinematic feel, high-end automotive marketing photography style.`,
 ];
 
 serve(async (req) => {
