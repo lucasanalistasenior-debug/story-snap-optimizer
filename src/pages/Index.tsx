@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { ImageUploader } from "@/components/ImageUploader";
 import { ProductImageGrid } from "@/components/ProductImageGrid";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
 const PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
