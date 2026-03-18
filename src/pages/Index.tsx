@@ -280,7 +280,7 @@ const Index = () => {
               ) : (
                 <div className="h-10 rounded-md bg-secondary/50 border border-dashed border-border flex items-center px-3">
                   <span className="text-sm text-muted-foreground">
-                    Your optimized title will appear here…
+                    Seu título otimizado aparecerá aqui…
                   </span>
                 </div>
               )}
