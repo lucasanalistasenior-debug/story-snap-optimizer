@@ -154,14 +154,14 @@ const Index = () => {
             </div>
             <div>
               <h1 className="text-base font-bold text-foreground leading-none">ProductAI</h1>
-              <p className="text-xs text-muted-foreground mt-0.5">SEO + Image Generator</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Gerador de SEO + Imagens</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {hasGenerated && (
               <span className="flex items-center gap-1.5 text-xs font-medium text-accent-emerald">
                 <CheckCircle className="w-3.5 h-3.5" />
-                Generated
+                Gerado
               </span>
             )}
             {(hasGenerated || productInfo) && (
@@ -170,7 +170,7 @@ const Index = () => {
                 className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-secondary"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                Reset
+                Reiniciar
               </button>
             )}
           </div>
