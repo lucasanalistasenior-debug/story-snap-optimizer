@@ -255,11 +255,11 @@ const Index = () => {
             {/* SEO Title */}
             <div className="panel p-5">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-bold text-foreground">SEO Title</h2>
+                <h2 className="text-sm font-bold text-foreground">Título SEO</h2>
                 {seoTitle && (
                   <span className="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20">
                     <CheckCircle className="w-3 h-3" />
-                    SEO Optimized
+                    Otimizado para SEO
                   </span>
                 )}
               </div>
