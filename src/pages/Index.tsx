@@ -45,15 +45,29 @@ const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
 
-  const handleImageSelect = useCallback((file: File | null) => {
-    setProductImage(file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
-    }
+  const handleImagesChange = useCallback((newFiles: File[]) => {
+    if (newFiles.length === 0) return;
+    setProductImages((prev) => {
+      const combined = [...prev, ...newFiles];
+      // Generate previews for newly added files
+      newFiles.forEach((file, idx) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreviews((p) => {
+            const next = [...p];
+            next[prev.length + idx] = reader.result as string;
+            return next;
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+      return combined;
+    });
+  }, []);
+
+  const handleRemoveImage = useCallback((index: number) => {
+    setProductImages((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   const canGenerate = productInfo.trim().length > 0;
