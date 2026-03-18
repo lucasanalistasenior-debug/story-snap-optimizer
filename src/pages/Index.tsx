@@ -34,8 +34,8 @@ const Index = () => {
   const { toast } = useToast();
 
   // Inputs
-  const [productImage, setProductImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [productImages, setProductImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [productInfo, setProductInfo] = useState("");
   const [vehicleInfo, setVehicleInfo] = useState("");
 
