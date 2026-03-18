@@ -194,32 +194,32 @@ const Index = () => {
 
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-foreground uppercase tracking-wide">
-                  Vehicle Compatibility
+                  Compatibilidade com Veículo
                 </Label>
                 <Input
-                  placeholder="e.g. 2020-2024 Ford F-150, Toyota Tacoma"
+                  placeholder="Ex: Yamaha Factor 150 2024, Honda CG 160"
                   value={vehicleInfo}
                   onChange={(e) => setVehicleInfo(e.target.value)}
                   className="text-sm"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Optional — used for the hero image and title
+                  Opcional — usado na imagem principal e no título
                 </p>
               </div>
 
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-foreground uppercase tracking-wide">
-                  Product Details <span className="text-destructive">*</span>
+                  Detalhes do Produto <span className="text-destructive">*</span>
                 </Label>
                 <Textarea
-                  placeholder="Describe your product: name, brand, specifications, materials, key features, dimensions, use case..."
+                  placeholder="Descreva seu produto: nome, marca, especificações, materiais, diferenciais, dimensões, aplicação..."
                   value={productInfo}
                   onChange={(e) => setProductInfo(e.target.value)}
                   className="text-sm resize-none"
                   rows={6}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {productInfo.length} / 1000 characters. More detail = better results.
+                  {productInfo.length} / 1000 caracteres. Mais detalhes = melhores resultados.
                 </p>
               </div>
             </div>
@@ -232,12 +232,12 @@ const Index = () => {
               {isGenerating ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Generating…
+                  Gerando…
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  Generate SEO Title + Images
+                  Gerar Título SEO + Imagens
                 </>
               )}
             </Button>
@@ -245,7 +245,7 @@ const Index = () => {
             {!canGenerate && (
               <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
                 <AlertCircle className="w-3.5 h-3.5" />
-                Add product details to enable generation
+                Preencha os detalhes do produto para continuar
               </p>
             )}
           </div>
