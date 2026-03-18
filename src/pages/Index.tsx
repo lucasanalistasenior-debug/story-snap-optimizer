@@ -289,11 +289,11 @@ const Index = () => {
             {/* Image Grid */}
             <div className="panel p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-bold text-foreground">Generated Images</h2>
+                <h2 className="text-sm font-bold text-foreground">Imagens Geradas</h2>
                 {isGenerating && (
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Generating images…
+                    Gerando imagens…
                   </span>
                 )}
               </div>
