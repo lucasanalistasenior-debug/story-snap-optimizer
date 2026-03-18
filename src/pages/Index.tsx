@@ -185,9 +185,9 @@ const Index = () => {
             <div className="panel p-5 space-y-5">
               <div>
                 <h2 className="text-sm font-bold text-foreground mb-3">Product Images</h2>
-                <div onRemoveImage={(e: CustomEvent) => handleRemoveImage(e.detail)}>
                 <ImageUploader
-                  onImagesChange={handleImagesChange}
+                  onAddImages={handleImagesChange}
+                  onRemoveAt={handleRemoveImage}
                   imagePreviews={imagePreviews}
                 />
               </div>
