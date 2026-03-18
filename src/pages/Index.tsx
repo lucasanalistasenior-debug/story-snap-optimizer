@@ -274,7 +274,7 @@ const Index = () => {
                     className="text-sm font-medium h-auto py-2.5"
                   />
                   <p className="text-xs text-muted-foreground">
-                    {seoTitle.length} characters · Editable
+                    {seoTitle.length} caracteres · Editável
                   </p>
                 </div>
               ) : (
