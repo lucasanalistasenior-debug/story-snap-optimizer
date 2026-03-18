@@ -34,8 +34,8 @@ const Index = () => {
   const { toast } = useToast();
 
   // Inputs
-  const [productImage, setProductImage] = useState<File | null>(null);
-  const [imagePreview, setImagePreview] = useState<string | null>(null);
+  const [productImages, setProductImages] = useState<File[]>([]);
+  const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [productInfo, setProductInfo] = useState("");
   const [vehicleInfo, setVehicleInfo] = useState("");
 
@@ -45,15 +45,29 @@ const Index = () => {
   const [isGenerating, setIsGenerating] = useState(false);
   const [hasGenerated, setHasGenerated] = useState(false);
 
-  const handleImageSelect = useCallback((file: File | null) => {
-    setProductImage(file);
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => setImagePreview(reader.result as string);
-      reader.readAsDataURL(file);
-    } else {
-      setImagePreview(null);
-    }
+  const handleImagesChange = useCallback((newFiles: File[]) => {
+    if (newFiles.length === 0) return;
+    setProductImages((prev) => {
+      const combined = [...prev, ...newFiles];
+      // Generate previews for newly added files
+      newFiles.forEach((file, idx) => {
+        const reader = new FileReader();
+        reader.onloadend = () => {
+          setImagePreviews((p) => {
+            const next = [...p];
+            next[prev.length + idx] = reader.result as string;
+            return next;
+          });
+        };
+        reader.readAsDataURL(file);
+      });
+      return combined;
+    });
+  }, []);
+
+  const handleRemoveImage = useCallback((index: number) => {
+    setProductImages((prev) => prev.filter((_, i) => i !== index));
+    setImagePreviews((prev) => prev.filter((_, i) => i !== index));
   }, []);
 
   const canGenerate = productInfo.trim().length > 0;
@@ -119,8 +133,8 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    setProductImage(null);
-    setImagePreview(null);
+    setProductImages([]);
+    setImagePreviews([]);
     setProductInfo("");
     setVehicleInfo("");
     setSeoTitle("");
@@ -170,10 +184,11 @@ const Index = () => {
           <div className="space-y-4">
             <div className="panel p-5 space-y-5">
               <div>
-                <h2 className="text-sm font-bold text-foreground mb-3">Product Image</h2>
+                <h2 className="text-sm font-bold text-foreground mb-3">Product Images</h2>
                 <ImageUploader
-                  onImageSelect={handleImageSelect}
-                  imagePreview={imagePreview}
+                  onAddImages={handleImagesChange}
+                  onRemoveAt={handleRemoveImage}
+                  imagePreviews={imagePreviews}
                 />
               </div>
 
