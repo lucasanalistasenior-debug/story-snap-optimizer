@@ -97,7 +97,7 @@ const ImageCard: React.FC<{
 
       {isHero && (
         <span className="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-accent-emerald text-accent-emerald-foreground">
-          Hero
+          Principal
         </span>
       )}
       <span className="absolute bottom-2 left-2 text-xs font-medium px-2 py-0.5 rounded bg-card/80 text-foreground">
