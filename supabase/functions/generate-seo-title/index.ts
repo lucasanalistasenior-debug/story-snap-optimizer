@@ -18,19 +18,23 @@ serve(async (req) => {
       throw new Error("LOVABLE_API_KEY is not configured");
     }
 
-    const systemPrompt = `You are an expert e-commerce SEO specialist. Your job is to create a single, highly optimized product title for online marketplaces like Amazon, eBay, or Google Shopping. 
+    const systemPrompt = `Você é um especialista em SEO para e-commerce brasileiro. Seu trabalho é criar um único título de produto altamente otimizado para marketplaces como Mercado Livre, Amazon Brasil, Shopee e Google Shopping.
 
-Rules:
-- Maximum 80 characters
-- Include the most important keywords naturally
-- Mention the vehicle compatibility if provided
-- Start with the product type/brand
-- Be specific about key specifications
-- Return ONLY the title, nothing else`;
+Regras de SEO para português brasileiro:
+- Máximo de 120 caracteres
+- Escreva SOMENTE em português do Brasil
+- Inclua as palavras-chave mais importantes de forma natural
+- Mencione a compatibilidade com veículo se fornecida (ex: "para Honda CG 160 2023")
+- Comece com o tipo/nome do produto
+- Seja específico sobre especificações técnicas relevantes
+- Use termos que o consumidor brasileiro realmente pesquisa
+- Não use abreviações que confundam o consumidor
+- Não use símbolos desnecessários como "|", "/", "-" em excesso
+- Retorne APENAS o título, sem explicações ou pontuação final`;
 
-    const userPrompt = `Product Information: ${productInfo}${vehicleInfo ? `\nVehicle Compatibility: ${vehicleInfo}` : ""}
+    const userPrompt = `Informações do Produto: ${productInfo}${vehicleInfo ? `\nCompatibilidade com Veículo: ${vehicleInfo}` : ""}
 
-Generate a single SEO-optimized product title.`;
+Gere um único título de produto otimizado para SEO em português do Brasil.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
