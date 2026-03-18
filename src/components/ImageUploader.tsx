@@ -81,7 +81,7 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-md text-xs font-semibold">
               <Upload className="w-3.5 h-3.5" />
-              Browse Files
+              Escolher Arquivos
             </div>
           </div>
         </div>
