@@ -133,8 +133,8 @@ const Index = () => {
   };
 
   const handleReset = () => {
-    setProductImage(null);
-    setImagePreview(null);
+    setProductImages([]);
+    setImagePreviews([]);
     setProductInfo("");
     setVehicleInfo("");
     setSeoTitle("");
