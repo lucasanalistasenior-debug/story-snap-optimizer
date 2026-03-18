@@ -75,13 +75,13 @@ export const ImageUploader: React.FC<ImageUploaderProps> = ({
               <ImageIcon className="w-6 h-6 text-primary" />
             </div>
             <div className="text-center">
-              <p className="text-sm font-semibold text-foreground">Upload Product Images</p>
-              <p className="text-xs text-muted-foreground mt-0.5">Drag & drop or click to browse</p>
-              <p className="text-xs text-muted-foreground">PNG, JPG, WebP · Multiple allowed</p>
+            <p className="text-sm font-semibold text-foreground">Enviar Imagens do Produto</p>
+            <p className="text-xs text-muted-foreground mt-0.5">Arraste & solte ou clique para buscar</p>
+            <p className="text-xs text-muted-foreground">PNG, JPG, WebP · Múltiplas permitidas</p>
             </div>
             <div className="flex items-center gap-1.5 px-3 py-1.5 bg-primary text-primary-foreground rounded-md text-xs font-semibold">
               <Upload className="w-3.5 h-3.5" />
-              Browse Files
+              Escolher Arquivos
             </div>
           </div>
         </div>

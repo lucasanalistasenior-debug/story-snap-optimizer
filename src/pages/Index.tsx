@@ -154,14 +154,14 @@ const Index = () => {
             </div>
             <div>
               <h1 className="text-base font-bold text-foreground leading-none">ProductAI</h1>
-              <p className="text-xs text-muted-foreground mt-0.5">SEO + Image Generator</p>
+              <p className="text-xs text-muted-foreground mt-0.5">Gerador de SEO + Imagens</p>
             </div>
           </div>
           <div className="flex items-center gap-2">
             {hasGenerated && (
               <span className="flex items-center gap-1.5 text-xs font-medium text-accent-emerald">
                 <CheckCircle className="w-3.5 h-3.5" />
-                Generated
+                Gerado
               </span>
             )}
             {(hasGenerated || productInfo) && (
@@ -170,7 +170,7 @@ const Index = () => {
                 className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground transition-colors px-2 py-1 rounded hover:bg-secondary"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
-                Reset
+                Reiniciar
               </button>
             )}
           </div>
@@ -184,7 +184,7 @@ const Index = () => {
           <div className="space-y-4">
             <div className="panel p-5 space-y-5">
               <div>
-                <h2 className="text-sm font-bold text-foreground mb-3">Product Images</h2>
+                <h2 className="text-sm font-bold text-foreground mb-3">Imagens do Produto</h2>
                 <ImageUploader
                   onAddImages={handleImagesChange}
                   onRemoveAt={handleRemoveImage}
@@ -194,32 +194,32 @@ const Index = () => {
 
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-foreground uppercase tracking-wide">
-                  Vehicle Compatibility
+                  Compatibilidade com Veículo
                 </Label>
                 <Input
-                  placeholder="e.g. 2020-2024 Ford F-150, Toyota Tacoma"
+                  placeholder="Ex: Yamaha Factor 150 2024, Honda CG 160"
                   value={vehicleInfo}
                   onChange={(e) => setVehicleInfo(e.target.value)}
                   className="text-sm"
                 />
                 <p className="text-xs text-muted-foreground">
-                  Optional — used for the hero image and title
+                  Opcional — usado na imagem principal e no título
                 </p>
               </div>
 
               <div className="space-y-1.5">
                 <Label className="text-xs font-semibold text-foreground uppercase tracking-wide">
-                  Product Details <span className="text-destructive">*</span>
+                  Detalhes do Produto <span className="text-destructive">*</span>
                 </Label>
                 <Textarea
-                  placeholder="Describe your product: name, brand, specifications, materials, key features, dimensions, use case..."
+                  placeholder="Descreva seu produto: nome, marca, especificações, materiais, diferenciais, dimensões, aplicação..."
                   value={productInfo}
                   onChange={(e) => setProductInfo(e.target.value)}
                   className="text-sm resize-none"
                   rows={6}
                 />
                 <p className="text-xs text-muted-foreground">
-                  {productInfo.length} / 1000 characters. More detail = better results.
+                  {productInfo.length} / 1000 caracteres. Mais detalhes = melhores resultados.
                 </p>
               </div>
             </div>
@@ -232,12 +232,12 @@ const Index = () => {
               {isGenerating ? (
                 <>
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  Generating…
+                  Gerando…
                 </>
               ) : (
                 <>
                   <Sparkles className="w-4 h-4" />
-                  Generate SEO Title + Images
+                  Gerar Título SEO + Imagens
                 </>
               )}
             </Button>
@@ -245,7 +245,7 @@ const Index = () => {
             {!canGenerate && (
               <p className="text-xs text-muted-foreground text-center flex items-center justify-center gap-1">
                 <AlertCircle className="w-3.5 h-3.5" />
-                Add product details to enable generation
+                Preencha os detalhes do produto para continuar
               </p>
             )}
           </div>
@@ -255,11 +255,11 @@ const Index = () => {
             {/* SEO Title */}
             <div className="panel p-5">
               <div className="flex items-center justify-between mb-3">
-                <h2 className="text-sm font-bold text-foreground">SEO Title</h2>
+                <h2 className="text-sm font-bold text-foreground">Título SEO</h2>
                 {seoTitle && (
                   <span className="flex items-center gap-1 text-xs font-semibold px-2 py-0.5 rounded-full bg-accent-emerald/10 text-accent-emerald border border-accent-emerald/20">
                     <CheckCircle className="w-3 h-3" />
-                    SEO Optimized
+                    Otimizado para SEO
                   </span>
                 )}
               </div>
@@ -274,13 +274,13 @@ const Index = () => {
                     className="text-sm font-medium h-auto py-2.5"
                   />
                   <p className="text-xs text-muted-foreground">
-                    {seoTitle.length} characters · Editable
+                    {seoTitle.length} caracteres · Editável
                   </p>
                 </div>
               ) : (
                 <div className="h-10 rounded-md bg-secondary/50 border border-dashed border-border flex items-center px-3">
                   <span className="text-sm text-muted-foreground">
-                    Your optimized title will appear here…
+                    Seu título otimizado aparecerá aqui…
                   </span>
                 </div>
               )}
@@ -289,11 +289,11 @@ const Index = () => {
             {/* Image Grid */}
             <div className="panel p-5">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-sm font-bold text-foreground">Generated Images</h2>
+                <h2 className="text-sm font-bold text-foreground">Imagens Geradas</h2>
                 {isGenerating && (
                   <span className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
-                    Generating images…
+                    Gerando imagens…
                   </span>
                 )}
               </div>

@@ -11,11 +11,11 @@ interface ImageLabel {
 // 6 images: Hero is large (col-span-2, row-span-2), then 2 stacked on right,
 // then 3 across the bottom row
 const IMAGE_LABELS: ImageLabel[] = [
-  { label: "Main Hero", isHero: true, colSpan: 2, rowSpan: 2 },
-  { label: "Installed" },
-  { label: "Detail Shot" },
-  { label: "Multi-Angle" },
-  { label: "Features" },
+  { label: "Principal Hero", isHero: true, colSpan: 2, rowSpan: 2 },
+  { label: "Instalado" },
+  { label: "Detalhe" },
+  { label: "Multi-Ângulo" },
+  { label: "Funcionalidades" },
   { label: "Lifestyle" },
 ];
 
@@ -97,7 +97,7 @@ const ImageCard: React.FC<{
 
       {isHero && (
         <span className="absolute top-2 left-2 text-xs font-semibold px-2 py-0.5 rounded-full bg-accent-emerald text-accent-emerald-foreground">
-          Hero
+          Principal
         </span>
       )}
       <span className="absolute bottom-2 left-2 text-xs font-medium px-2 py-0.5 rounded bg-card/80 text-foreground">
