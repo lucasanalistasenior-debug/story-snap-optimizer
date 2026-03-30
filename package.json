@@ -2,9 +2,10 @@
   "name": "story-snap-optimizer",
   "private": true,
   "version": "1.0.0",
+  "type": "module",
   "engines": {
-  "node": "24.x"
-},
+    "node": "24.x"
+  },
   "scripts": {
     "dev": "vite",
     "build": "vite build",
@@ -14,11 +15,11 @@
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
   },
- "devDependencies": {
-  "vite": "^5.4.8",
-  "@vitejs/plugin-react": "^4.3.1",
-  "tailwindcss": "^3.4.4",
-  "postcss": "^8.4.38",
-  "autoprefixer": "^10.4.19"
-}
+  "devDependencies": {
+    "vite": "^5.4.21",
+    "@vitejs/plugin-react": "^4.3.1",
+    "tailwindcss": "^3.4.4",
+    "postcss": "^8.4.38",
+    "autoprefixer": "^10.4.19"
+  }
 }
