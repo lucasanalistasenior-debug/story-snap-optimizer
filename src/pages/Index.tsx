@@ -8,38 +8,97 @@ import { ImageUploader } from "@/components/ImageUploader";
 import { ProductImageGrid } from "@/components/ProductImageGrid";
 import { useToast } from "@/hooks/use-toast";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
 
-async function callEdgeFunction(name: string, body: Record<string, unknown>) {
-  const response = await fetch(`${SUPABASE_URL}/functions/v1/${name}`, {
+// ── SEO Title via Anthropic API ──────────────────────────────────────────────
+async function generateSeoTitle(productInfo: string, vehicleInfo: string): Promise<string> {
+  const systemPrompt = `Você é um especialista em SEO para e-commerce brasileiro. Seu trabalho é criar um único título de produto altamente otimizado para marketplaces como Mercado Livre, Amazon Brasil, Shopee e Google Shopping.
+Regras de SEO para português brasileiro:
+- Máximo de 120 caracteres
+- Escreva SOMENTE em português do Brasil
+- Inclua as palavras-chave mais importantes de forma natural
+- Mencione a compatibilidade com veículo se fornecida (ex: "para Honda CG 160 2023")
+- Comece com o tipo/nome do produto
+- Seja específico sobre especificações técnicas relevantes
+- Use termos que o consumidor brasileiro realmente pesquisa
+- Não use abreviações que confundam o consumidor
+- Não use símbolos desnecessários como "|", "/", "-" em excesso
+- Retorne APENAS o título, sem explicações ou pontuação final`;
+
+  const userPrompt = `Informações do Produto: ${productInfo}${vehicleInfo ? `\nCompatibilidade com Veículo: ${vehicleInfo}` : ""}
+Gere um único título de produto otimizado para SEO em português do Brasil.`;
+
+  const response = await fetch("https://api.anthropic.com/v1/messages", {
     method: "POST",
     headers: {
-      Authorization: `Bearer ${PUBLISHABLE_KEY}`,
+      "x-api-key": ANTHROPIC_API_KEY,
+      "anthropic-version": "2023-06-01",
+      "anthropic-dangerous-direct-browser-access": "true",
       "Content-Type": "application/json",
     },
-    body: JSON.stringify(body),
+    body: JSON.stringify({
+      model: "claude-sonnet-4-20250514",
+      max_tokens: 200,
+      system: systemPrompt,
+      messages: [{ role: "user", content: userPrompt }],
+    }),
   });
 
-  const data = await response.json();
-
   if (!response.ok) {
-    throw new Error(data.error ?? `Request failed with status ${response.status}`);
+    const err = await response.json().catch(() => ({}));
+    throw new Error(err?.error?.message ?? `Anthropic API error: ${response.status}`);
   }
 
-  return data;
+  const data = await response.json();
+  return data.content?.[0]?.text?.trim() ?? "";
 }
 
+// ── Image prompts ────────────────────────────────────────────────────────────
+const IMAGE_PROMPTS = [
+  (productInfo: string, vehicleInfo: string) =>
+    `Professional automotive e-commerce hero image. Dramatic composite product shot: a ${vehicleInfo || "modern car"} is prominently displayed in the upper half of the image, positioned above and slightly angled, as if floating or parked above the product. Directly below the car, centered at the bottom of the image, sits the ${productInfo} product on a pure white background. Clean white studio background throughout. The vehicle dominates the top portion, the product sits below it. Crystal clear studio lighting, no shadows, ultra-clean commercial photography suitable for Amazon.`,
+
+  (productInfo: string, vehicleInfo: string) =>
+    `Professional automotive product photography. The ${productInfo} shown installed and in use on a ${vehicleInfo || "modern vehicle"} in a realistic outdoor or garage setting. Show the product in its natural installed position. Well-lit, sharp focus, high quality commercial image.`,
+
+  (productInfo: string, vehicleInfo: string) =>
+    `Macro product photography. Extreme close-up of ${productInfo} highlighting material quality, finish, craftsmanship and key technical details. Clean white or very light gradient background. Show texture, connectors, labels or part numbers clearly. High-end commercial photography style.`,
+
+  (productInfo: string, vehicleInfo: string) =>
+    `Professional product photography. ${productInfo} shown from three different angles simultaneously arranged on a clean light gray gradient background: front view, side view, and back/bottom view. ${vehicleInfo ? `Product fits ${vehicleInfo}.` : ""} Commercial e-commerce catalog style.`,
+
+  (productInfo: string, vehicleInfo: string) =>
+    `Clean infographic-style product image for e-commerce. ${productInfo} on a white background with subtle text callout lines pointing to 3-4 key features or specifications. Modern, minimal design. Icons and short labels next to each callout. Professional commercial product shot.`,
+
+  (productInfo: string, vehicleInfo: string) =>
+    `Wide-format lifestyle banner photography. ${vehicleInfo || "A modern vehicle"} parked in an attractive urban or scenic outdoor environment. The ${productInfo} is visibly featured as a key component of the vehicle. Golden hour lighting, cinematic feel, high-end automotive marketing photography style.`,
+];
+
+// ── Image generation via Pollinations.ai (free, no key needed) ───────────────
+async function generateImage(productInfo: string, vehicleInfo: string, imageIndex: number): Promise<string> {
+  const promptFn = IMAGE_PROMPTS[imageIndex % IMAGE_PROMPTS.length];
+  const prompt = promptFn(productInfo, vehicleInfo ?? "");
+  const encoded = encodeURIComponent(prompt);
+  // Add a seed so each image is different, and nologo to keep it clean
+  const seed = imageIndex * 1000 + Math.floor(Math.random() * 999);
+  const url = `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
+
+  // Pollinations returns the image directly — we just verify it loads
+  const res = await fetch(url);
+  if (!res.ok) throw new Error(`Image ${imageIndex + 1} generation failed`);
+  const blob = await res.blob();
+  return URL.createObjectURL(blob);
+}
+
+// ── Component ────────────────────────────────────────────────────────────────
 const Index = () => {
   const { toast } = useToast();
 
-  // Inputs
   const [productImages, setProductImages] = useState<File[]>([]);
   const [imagePreviews, setImagePreviews] = useState<string[]>([]);
   const [productInfo, setProductInfo] = useState("");
   const [vehicleInfo, setVehicleInfo] = useState("");
 
-  // Outputs
   const [seoTitle, setSeoTitle] = useState("");
   const [generatedImages, setGeneratedImages] = useState<(string | null)[]>([null, null, null, null, null, null]);
   const [isGenerating, setIsGenerating] = useState(false);
@@ -49,7 +108,6 @@ const Index = () => {
     if (newFiles.length === 0) return;
     setProductImages((prev) => {
       const combined = [...prev, ...newFiles];
-      // Generate previews for newly added files
       newFiles.forEach((file, idx) => {
         const reader = new FileReader();
         reader.onloadend = () => {
@@ -78,52 +136,41 @@ const Index = () => {
     setIsGenerating(true);
     setHasGenerated(false);
     setSeoTitle("");
-      setGeneratedImages([null, null, null, null, null, null]);
+    setGeneratedImages([null, null, null, null, null, null]);
 
     try {
-      // Step 1: Generate SEO title
-      const titleData = await callEdgeFunction("generate-seo-title", {
-        productInfo: productInfo.trim(),
-        vehicleInfo: vehicleInfo.trim(),
-      });
-      setSeoTitle(titleData.title ?? "");
+      // Step 1: SEO title via Anthropic
+      const title = await generateSeoTitle(productInfo.trim(), vehicleInfo.trim());
+      setSeoTitle(title);
 
-      // Step 2: Generate 6 images in parallel
+      // Step 2: 6 images in parallel via Pollinations.ai
       const imagePromises = Array.from({ length: 6 }, (_, i) =>
-        callEdgeFunction("generate-product-images", {
-          productInfo: productInfo.trim(),
-          vehicleInfo: vehicleInfo.trim(),
-          imageIndex: i,
-        })
-          .then((data) => data.imageUrl ?? null)
+        generateImage(productInfo.trim(), vehicleInfo.trim(), i)
+          .then((url) => {
+            setGeneratedImages((prev) => {
+              const next = [...prev];
+              next[i] = url;
+              return next;
+            });
+            return url;
+          })
           .catch((err) => {
             console.error(`Image ${i + 1} failed:`, err);
             return null;
           })
       );
 
-      // Stream images into state as they resolve
-      for (let i = 0; i < imagePromises.length; i++) {
-        imagePromises[i].then((url) => {
-          setGeneratedImages((prev) => {
-            const next = [...prev];
-            next[i] = url;
-            return next;
-          });
-        });
-      }
-
       await Promise.allSettled(imagePromises);
       setHasGenerated(true);
 
       toast({
-        title: "Generation complete!",
-        description: "Your SEO title and product images are ready.",
+        title: "Geração completa!",
+        description: "Seu título SEO e imagens do produto estão prontos.",
       });
     } catch (err) {
       const message = err instanceof Error ? err.message : "Something went wrong";
       toast({
-        title: "Generation failed",
+        title: "Geração falhou",
         description: message,
         variant: "destructive",
       });
@@ -180,7 +227,7 @@ const Index = () => {
       {/* Main Workbench */}
       <main className="max-w-7xl mx-auto px-6 py-6">
         <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6 items-start">
-          {/* ── LEFT PANEL: Inputs ── */}
+          {/* LEFT PANEL */}
           <div className="space-y-4">
             <div className="panel p-5 space-y-5">
               <div>
@@ -250,9 +297,8 @@ const Index = () => {
             )}
           </div>
 
-          {/* ── RIGHT PANEL: Outputs ── */}
+          {/* RIGHT PANEL */}
           <div className="space-y-4">
-            {/* SEO Title */}
             <div className="panel p-5">
               <div className="flex items-center justify-between mb-3">
                 <h2 className="text-sm font-bold text-foreground">Título SEO</h2>
@@ -286,7 +332,6 @@ const Index = () => {
               )}
             </div>
 
-            {/* Image Grid */}
             <div className="panel p-5">
               <div className="flex items-center justify-between mb-4">
                 <h2 className="text-sm font-bold text-foreground">Imagens Geradas</h2>
@@ -297,10 +342,7 @@ const Index = () => {
                   </span>
                 )}
               </div>
-              <ProductImageGrid
-                images={generatedImages}
-                isLoading={isGenerating}
-              />
+              <ProductImageGrid images={generatedImages} isLoading={isGenerating} />
             </div>
           </div>
         </div>
