@@ -43,7 +43,7 @@ const IMAGE_PROMPTS = [
     `Wide-format lifestyle banner photography. ${vehicleInfo || "A modern vehicle"} parked in an attractive urban or scenic outdoor environment. The ${productInfo} is visibly featured as a key component of the vehicle. Golden hour lighting, cinematic feel, high-end automotive marketing photography style.`,
 ];
 
-// ── Image generation via Pollinations.ai (free, no key needed) ───────────────
+// ── Image generation via Pollinations.ai with retry logic ────────────────────
 async function generateImage(productInfo: string, vehicleInfo: string, imageIndex: number): Promise<string> {
   const promptFn = IMAGE_PROMPTS[imageIndex % IMAGE_PROMPTS.length];
   const prompt = promptFn(productInfo, vehicleInfo ?? "");
@@ -51,11 +51,26 @@ async function generateImage(productInfo: string, vehicleInfo: string, imageInde
   const seed = imageIndex * 1000 + Math.floor(Math.random() * 999);
   const url = `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
 
-  const res = await fetch(url);
-  if (!res.ok) throw new Error(`Image ${imageIndex + 1} generation failed`);
-  const blob = await res.blob();
-  return URL.createObjectURL(blob);
+  const MAX_RETRIES = 3;
+  for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+    try {
+      // Stagger requests to avoid overwhelming the API
+      if (attempt > 0) {
+        await new Promise((r) => setTimeout(r, attempt * 2000));
+      }
+      const res = await fetch(url);
+      if (!res.ok) throw new Error(`status ${res.status}`);
+      const blob = await res.blob();
+      if (blob.size < 1000) throw new Error("Empty image received");
+      return URL.createObjectURL(blob);
+    } catch (err) {
+      if (attempt === MAX_RETRIES - 1) throw new Error(`Image ${imageIndex + 1} failed after ${MAX_RETRIES} attempts`);
+    }
+  }
+  throw new Error(`Image ${imageIndex + 1} generation failed`);
 }
+
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
 // ── Component ────────────────────────────────────────────────────────────────
 const Index = () => {
@@ -110,21 +125,23 @@ const Index = () => {
       const title = await generateSeoTitle(productInfo.trim(), vehicleInfo.trim());
       setSeoTitle(title);
 
-      // Step 2: 6 images in parallel via Pollinations.ai images
+      // Step 2: 6 images staggered to avoid API throttling
       const imagePromises = Array.from({ length: 6 }, (_, i) =>
-        generateImage(productInfo.trim(), vehicleInfo.trim(), i)
-          .then((url) => {
-            setGeneratedImages((prev) => {
-              const next = [...prev];
-              next[i] = url;
-              return next;
-            });
-            return url;
-          })
-          .catch((err) => {
-            console.error(`Image ${i + 1} failed:`, err);
-            return null;
-          })
+        sleep(i * 500).then(() =>
+          generateImage(productInfo.trim(), vehicleInfo.trim(), i)
+            .then((url) => {
+              setGeneratedImages((prev) => {
+                const next = [...prev];
+                next[i] = url;
+                return next;
+              });
+              return url;
+            })
+            .catch((err) => {
+              console.error(`Image ${i + 1} failed:`, err);
+              return null;
+            })
+        )
       );
 
       await Promise.allSettled(imagePromises);
