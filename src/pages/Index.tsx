@@ -8,49 +8,33 @@ import { ImageUploader } from "@/components/ImageUploader";
 import { ProductImageGrid } from "@/components/ProductImageGrid";
 import { useToast } from "@/hooks/use-toast";
 
-const ANTHROPIC_API_KEY = import.meta.env.VITE_ANTHROPIC_API_KEY as string;
-
-// ── SEO Title via Anthropic API ──────────────────────────────────────────────
+// ── SEO Title via Pollinations.ai text API (free, no key needed) ─────────────
 async function generateSeoTitle(productInfo: string, vehicleInfo: string): Promise<string> {
-  const systemPrompt = `Você é um especialista em SEO para e-commerce brasileiro. Seu trabalho é criar um único título de produto altamente otimizado para marketplaces como Mercado Livre, Amazon Brasil, Shopee e Google Shopping.
-Regras de SEO para português brasileiro:
+  const prompt = `Você é um especialista em SEO para e-commerce brasileiro. Crie um único título de produto otimizado para marketplaces como Mercado Livre, Amazon Brasil, Shopee e Google Shopping.
+Regras:
 - Máximo de 120 caracteres
 - Escreva SOMENTE em português do Brasil
 - Inclua as palavras-chave mais importantes de forma natural
-- Mencione a compatibilidade com veículo se fornecida (ex: "para Honda CG 160 2023")
+- Mencione a compatibilidade com veículo se fornecida
 - Comece com o tipo/nome do produto
-- Seja específico sobre especificações técnicas relevantes
-- Use termos que o consumidor brasileiro realmente pesquisa
-- Não use abreviações que confundam o consumidor
-- Não use símbolos desnecessários como "|", "/", "-" em excesso
-- Retorne APENAS o título, sem explicações ou pontuação final`;
+- Retorne APENAS o título, sem explicações ou pontuação final
 
-  const userPrompt = `Informações do Produto: ${productInfo}${vehicleInfo ? `\nCompatibilidade com Veículo: ${vehicleInfo}` : ""}
-Gere um único título de produto otimizado para SEO em português do Brasil.`;
+Informações do Produto: ${productInfo}${vehicleInfo ? `\nCompatibilidade com Veículo: ${vehicleInfo}` : ""}`;
 
-  const response = await fetch("https://api.anthropic.com/v1/messages", {
+  const response = await fetch("https://text.pollinations.ai/", {
     method: "POST",
-    headers: {
-      "x-api-key": ANTHROPIC_API_KEY,
-      "anthropic-version": "2023-06-01",
-      "anthropic-dangerous-direct-browser-access": "true",
-      "Content-Type": "application/json",
-    },
+    headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      model: "claude-sonnet-4-20250514",
-      max_tokens: 200,
-      system: systemPrompt,
-      messages: [{ role: "user", content: userPrompt }],
+      messages: [{ role: "user", content: prompt }],
+      model: "openai",
+      seed: Math.floor(Math.random() * 9999),
+      jsonMode: false,
     }),
   });
 
-  if (!response.ok) {
-    const err = await response.json().catch(() => ({}));
-    throw new Error(err?.error?.message ?? `Anthropic API error: ${response.status}`);
-  }
-
-  const data = await response.json();
-  return data.content?.[0]?.text?.trim() ?? "";
+  if (!response.ok) throw new Error(`SEO title generation failed: ${response.status}`);
+  const title = await response.text();
+  return title.trim().replace(/^["']|["']$/g, "");
 }
 
 // ── Image prompts ────────────────────────────────────────────────────────────
@@ -79,11 +63,9 @@ async function generateImage(productInfo: string, vehicleInfo: string, imageInde
   const promptFn = IMAGE_PROMPTS[imageIndex % IMAGE_PROMPTS.length];
   const prompt = promptFn(productInfo, vehicleInfo ?? "");
   const encoded = encodeURIComponent(prompt);
-  // Add a seed so each image is different, and nologo to keep it clean
   const seed = imageIndex * 1000 + Math.floor(Math.random() * 999);
   const url = `https://image.pollinations.ai/prompt/${encoded}?width=1024&height=1024&seed=${seed}&nologo=true&enhance=true`;
 
-  // Pollinations returns the image directly — we just verify it loads
   const res = await fetch(url);
   if (!res.ok) throw new Error(`Image ${imageIndex + 1} generation failed`);
   const blob = await res.blob();
@@ -139,11 +121,11 @@ const Index = () => {
     setGeneratedImages([null, null, null, null, null, null]);
 
     try {
-      // Step 1: SEO title via Anthropic
+      // Step 1: SEO title via Pollinations.ai text
       const title = await generateSeoTitle(productInfo.trim(), vehicleInfo.trim());
       setSeoTitle(title);
 
-      // Step 2: 6 images in parallel via Pollinations.ai
+      // Step 2: 6 images in parallel via Pollinations.ai images
       const imagePromises = Array.from({ length: 6 }, (_, i) =>
         generateImage(productInfo.trim(), vehicleInfo.trim(), i)
           .then((url) => {
