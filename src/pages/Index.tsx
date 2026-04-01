@@ -8,30 +8,15 @@ import { ImageUploader } from "@/components/ImageUploader";
 import { ProductImageGrid } from "@/components/ProductImageGrid";
 import { useToast } from "@/hooks/use-toast";
 
-// ── SEO Title via Pollinations.ai text API (free, no key needed) ─────────────
+// ── SEO Title via Pollinations.ai text API GET (free, no key, no CORS) ───────
 async function generateSeoTitle(productInfo: string, vehicleInfo: string): Promise<string> {
-  const prompt = `Você é um especialista em SEO para e-commerce brasileiro. Crie um único título de produto otimizado para marketplaces como Mercado Livre, Amazon Brasil, Shopee e Google Shopping.
-Regras:
-- Máximo de 120 caracteres
-- Escreva SOMENTE em português do Brasil
-- Inclua as palavras-chave mais importantes de forma natural
-- Mencione a compatibilidade com veículo se fornecida
-- Comece com o tipo/nome do produto
-- Retorne APENAS o título, sem explicações ou pontuação final
+  const prompt = `Você é especialista em SEO para e-commerce brasileiro. Crie UM único título de produto para Mercado Livre, Amazon Brasil e Shopee. Regras: máximo 120 caracteres, apenas português do Brasil, inclua palavras-chave naturais${vehicleInfo ? `, mencione compatibilidade com ${vehicleInfo}` : ""}, comece com o tipo do produto, retorne APENAS o título sem explicações. Produto: ${productInfo}`;
 
-Informações do Produto: ${productInfo}${vehicleInfo ? `\nCompatibilidade com Veículo: ${vehicleInfo}` : ""}`;
+  const encoded = encodeURIComponent(prompt);
+  const seed = Math.floor(Math.random() * 9999);
+  const url = `https://text.pollinations.ai/${encoded}?model=openai&seed=${seed}`;
 
-  const response = await fetch("https://text.pollinations.ai/", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      messages: [{ role: "user", content: prompt }],
-      model: "openai",
-      seed: Math.floor(Math.random() * 9999),
-      jsonMode: false,
-    }),
-  });
-
+  const response = await fetch(url);
   if (!response.ok) throw new Error(`SEO title generation failed: ${response.status}`);
   const title = await response.text();
   return title.trim().replace(/^["']|["']$/g, "");
